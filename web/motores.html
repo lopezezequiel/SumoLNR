@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="description" content="">
+	<meta name="author" content="López Ricardo Ezequiel">
+
+	<!-- Materialize -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	
+	<!-- Knockout.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script>
+</head>
+
+<body>
+	
+	<div class="container">
+		<h5>Calcular torque máximo por motor y velocidad máxima del robot</h5>
+		<p>La idea es obtener el máximo torque que puede entregar cada motor sin que patinen las ruedas. Además se calcula la velocidad máxima</p>
+
+		<div class="row">
+			<form class="col s12 l6">
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="ue" type="number" step="0.01" class="validate" data-bind="value: ue" >
+						<label for="ue">Coeficiente de frición estática</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="m" type="number" class="validate" data-bind="value: m" >
+						<label for="m">Masa(kg)</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="r" type="number" class="validate" data-bind="value: r" >
+						<label for="r">Radio rueda(mm)</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="motores" type="number" class="validate" data-bind="value: motores" >
+						<label for="motores">Cantidad de motores</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="rpm" type="number" step="0.01" class="validate" data-bind="value: rpm" >
+						<label for="rpm">RPM</label>
+					</div>
+				</div>
+			</form>	
+			<div class="col s12 l6">	
+				<h5>Torque Máximo: <span data-bind="text: Mmax"> </span> N*m</h5>
+				<h5>Velocidad Máxima: <span data-bind="text: vmax"> </span> m/s</h5>
+			</div>
+		</div>
+	</div>
+	
+
+	<script type="text/javascript">
+
+		var g = 9.81;
+		
+		var TorqueVM = function(ue, m, r, motores, rpm) {
+			this.ue = ko.observable(ue);
+			this.m = ko.observable(m);
+			this.r = ko.observable(r);
+			this.motores = ko.observable(motores);
+			this.rpm = ko.observable(rpm);
+		 
+			this.Mmax = ko.pureComputed(function() {
+				var M = this.ue() * this.m() *  g * this.r() * 0.001 / this.motores();
+				return M.toFixed(2);
+			}, this);
+
+			this.vmax = ko.pureComputed(function() {
+				var v = 2 * Math.PI * this.r() * 0.001 * this.rpm() / 60;
+				return v.toFixed(2);
+			}, this);
+		};
+		 
+		ko.applyBindings(new TorqueVM(0.9, 3, 65/2, 2, 160)); 
+	</script>
+  
+  
+</body>
+
+</html>
